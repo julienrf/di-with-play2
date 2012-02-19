@@ -5,13 +5,10 @@ import play.api.mvc.Results._
 
 trait Secured extends Security {
   
-  override def Authenticated[A](action: Action[A]): Action[A] = action.compose { (request, originalAction) =>
-    (for {
-      username <- request.session.get("username")
-    } yield {
-      originalAction(request)
-    }) getOrElse {
-      Unauthorized(views.html.unauthorized())
+  override def Authenticated[A](action: Action[A]): Action[A] = Action(action.parser) { request =>
+    request.session.get("username") match {
+      case Some(user) => action(request)
+      case None => Unauthorized(views.html.unauthorized())
     }
   }
 }

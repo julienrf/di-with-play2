@@ -1,7 +1,7 @@
 package controllers
 
 import play.api._
-import play.api.mvc.Controller
+import play.api.mvc.{Controller, Action}
 import play.api.data._
 
 trait MyApp extends Controller {
@@ -16,7 +16,7 @@ trait MyApp extends Controller {
   }
   
   def login = Action { implicit request =>
-    Form("username" -> requiredText).bindFromRequest.fold(
+    Form("username" -> textRequired).bindFromRequest.fold(
         f => redirectToIndex,
         username => Redirect(request.headers.get("referer").getOrElse(myApp.routes.MyApp.index.url)).withSession("username" -> username)
     )
